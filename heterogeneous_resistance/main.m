@@ -14,7 +14,7 @@ avg_num = 1000;
 % Instantiate a zero matrix
 grid = zeros(matrix_size);
 
-% Make a resitance matrix
+% Make a resistance matrix
 res_grid = grid;
 for row = 1:matrix_size
     for col = 1:matrix_size
@@ -31,10 +31,10 @@ avg_grid(:,:,1) = grid;
 grid_copy = grid;
 
 for iter = 1:avg_num
-    % Run the propogation
+    % Run the propagation
     grid = grid_copy;
     for iteration=2:num_iterations
-        grid = propogate_onestep(grid, light_chance, res_grid);
+        grid = propagate_onestep_resistance(grid, light_chance, res_grid);
         avg_grid(:,:,iteration) = avg_grid(:,:,iteration) + grid;
     end
     

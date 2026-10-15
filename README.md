@@ -3,8 +3,9 @@
 
 This project implements a cellular automaton model in MATLAB to simulate wildfire propagation across a grid, with a focus on how environmental moisture and fire-induced drying affect spread dynamics.
 
-The full mathematical background and analysis are documented in the accompanying paper:
-Modeling How Moisture Affects Wildfire Spread (March 2024)
+The full mathematical background and analysis are in the accompanying paper: **[Modeling How Moisture Affects Wildfire Spread (PDF, March 2024)](Modeling_How_Moisture_Affects_Wildfire_Spread.pdf)**
+
+![Fire spread with moisture and drying](figures/exp3_drying.png)
 
 ---
 
@@ -73,9 +74,9 @@ Where:
 
 ## Simulation Details
 
-- 2D grid-based cellular automaton
-- Fire spreads only to directly adjacent cells
-- 10 time iterations per simulation
+- 20×20 grid with a single fire started in the center
+- Fire spreads to the 8 surrounding cells (including diagonals), at most one cell per timestep
+- 10 timesteps per simulation
 - Each experiment averaged over 1000 trials
 - Fire area measured as number of burning cells per timestep
 
@@ -118,17 +119,40 @@ Result:
 
 ---
 
+## Results
+
+| No moisture, no drying | Moisture without drying (p = 0.5) |
+|---|---|
+| ![](figures/exp1_ignition_probability.png) | ![](figures/exp2_moisture.png) |
+
+After 10 timesteps, the mean burning area is about 130 cells at p = 0.25, 274 at p = 0.5, and 341 at p = 0.75. At p = 0.5, raising moisture from 0 to 0.75 cuts it from 275 to 46 cells. With m = 0.75, drying recovers much of that spread (137 cells at d = 8) but stays well below a dry grid.
+
+As a sanity check from the paper, after one step with p = 0.5 and no moisture, each of the 8 neighbors burns with probability 0.5, giving an expected area of 1 + 8 × 0.5 = 5; the simulation gives 4.9.
+
 ## How to Run
 
-1. Open MATLAB.
-2. Navigate to the project directory.
-3. Run the main simulation script:
+In MATLAB (or GNU Octave), from the project folder:
 
-   main
+```matlab
+run_experiments
+```
 
-4. Plots will generate automatically showing fire area vs. time.
+This runs all three experiments (1,000 trials each) and saves the plots to `figures/`. To run a single configuration:
 
-Parameters such as ignition probability, moisture level, drying factor, number of iterations, and number of trials can be adjusted directly in the script.
+```matlab
+area = simulate_fire(p, moisture, drying, grid_size, num_steps, num_trials);
+area = simulate_fire(0.5, 0.75, 4, 20, 10, 1000);   % example
+```
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `run_experiments.m` | Runs the three experiments from the paper and saves plots |
+| `simulate_fire.m` | Averages burning area over time across many trials |
+| `propagate_step.m` | One timestep: ignition with moisture, and drying of cells that don't ignite |
+| `figures/` | Output plots |
+| `heterogeneous_resistance/` | An extension: each cell gets a random ignition resistance instead of uniform moisture, and the averaged burn map is saved as a video (`AvgFireMap.mp4`) |
 
 ---
 
@@ -145,11 +169,10 @@ Parameters such as ignition probability, moisture level, drying factor, number o
 
 This model makes several simplifying assumptions:
 
-- Uniform moisture across the grid
-- Fire spreads only to directly adjacent cells
+- Uniform moisture across the grid (the `heterogeneous_resistance/` variant relaxes this with random per-cell resistance)
+- Fire spreads only to the 8 neighboring cells
 - Drying occurs only for immediate neighbors
 - No wind or ember-based long-distance spread
-- No spatial heterogeneity
 
 These simplifications allow isolation of moisture effects but limit real-world fidelity.
 

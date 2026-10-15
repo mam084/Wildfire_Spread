@@ -1,11 +1,11 @@
-function grid = propogate_onestep(grid, light_chance, resist)
-    % Copy grid so that newly propogated squares don't factor in
+function grid = propagate_onestep_resistance(grid, light_chance, resist)
+    % Copy grid so that newly propagated squares don't factor in
     grid_copy = grid;
     row_dimen = size(grid, 1);
     col_dimen = size(grid, 2);
     % Loop through the rows
     for row = 1:row_dimen
-        % Loop thorugh the columns
+        % Loop through the columns
         for col = 1:col_dimen
             % If space is alight
             if grid_copy(row, col) == 1
